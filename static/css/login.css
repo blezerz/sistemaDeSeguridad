@@ -1,0 +1,326 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.headerLogin {
+    background-color: black;
+    color: white;
+    display: flex;
+    justify-content: space-between; /* Logo a la izq, título centrado, espacio a la der */
+    align-items: center;
+    height: 70px; /* altura fija */
+    padding: 0 20px; 
+}
+
+.logo-header {
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.logo-header span {
+    color: #fbc100;
+}
+
+header h1 {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.box-login {
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    box-shadow: 0 12px 50px rgba(0, 0, 0, 0.35);
+    padding: 50px 40px;
+    
+    width: 100%;           /* ocupa la mayoría de la pantalla pero no la sobrepasa */
+    max-width: 400px;     /* ancho máximo */
+    
+    color: #fff;
+    margin: 10vh auto;    /* centrado horizontal y margen superior para separación */
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* centra elementos dentro de la caja */
+    animation: fadeIn 0.8s ease;
+}
+
+.box-login h2 {
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 1.8rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;          /* los inputs ocupan todo el ancho disponible */
+    gap: 15px;            /* espacio uniforme entre inputs y botón */
+}
+
+input[type="text"],
+input[type="password"] {
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    font-size: 15px;
+    width: 100%;
+}
+
+button {
+    padding: 14px;
+    background: #000000;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {.box-login {
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    box-shadow: 0 12px 50px rgba(0, 0, 0, 0.35);
+    padding: 50px 40px;
+    
+    width: 90%;           /* ocupa la mayoría de la pantalla pero no la sobrepasa */
+    max-width: 400px;     /* ancho máximo */
+    
+    color: #fff;
+    margin: 10vh auto;    /* centrado horizontal y margen superior para separación */
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* centra elementos dentro de la caja */
+    animation: fadeIn 0.8s ease;
+}
+
+.box-login h2 {
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 1.8rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;          /* los inputs ocupan todo el ancho disponible */
+    gap: 15px;            /* espacio uniforme entre inputs y botón */
+}
+
+input[type="text"],
+input[type="password"] {
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    font-size: 15px;
+    width: 100%;
+}
+
+button {
+    padding: 14px;
+    background: #000000;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: #0f8003;
+    transform: translateY(-2px); /* pequeño efecto de “levantar” al pasar el mouse */
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.box-login {
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    box-shadow: 0 12px 50px rgba(0, 0, 0, 0.35);
+    padding: 50px 40px;
+    
+    width: 90%;           /* ocupa la mayoría de la pantalla pero no la sobrepasa */
+    max-width: 400px;     /* ancho máximo */
+    
+    color: #fff;
+    margin: 10vh auto;    /* centrado horizontal y margen superior para separación */
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* centra elementos dentro de la caja */
+    animation: fadeIn 0.8s ease;
+}
+
+.box-login h2 {
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 1.8rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;          /* los inputs ocupan todo el ancho disponible */
+    gap: 15px;            /* espacio uniforme entre inputs y botón */
+}
+
+input[type="text"],
+input[type="password"] {
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    font-size: 15px;
+    width: 100%;
+}
+
+button {
+    padding: 14px;
+    background: #000000;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: #0f8003;
+    transform: translateY(-2px); /* pequeño efecto de “levantar” al pasar el mouse */
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+    background: #0f8003;
+    transform: translateY(-2px); /* pequeño efecto de “levantar” al pasar el mouse */
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+
+
+
+
+
+
+footer {
+    background-color: #5b5f62;
+    color: white;
+    height: 85px;               /* altura fija */
+    display: flex;
+    padding: 0 15px;
+    box-sizing: border-box;
+    overflow: hidden;           /* evita que se salga */
+    margin-top: auto;
+}
+
+
+.footer-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;        /* centra verticalmente */
+}
+
+.footer-logo {
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    color: #e5e5be;
+    margin: 0 0 3px 0;
+}
+
+.footer-logo span {
+    color: #ffd54f;
+}
+
+.footer-description {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    color: #ddd;
+}
+
+/* 🔧 Ajuste del bloque de contacto */
+.footer-column-contact {
+    font-size: 0.75rem;
+    margin: 0;
+    line-height: 1.2;   /* más compacto */
+}
+
+.footer-column-contact p {
+    margin: 2px 0;     /* elimina grandes espacios entre párrafos */
+    line-height: 1.2;  /* texto compacto */
+}
+
+
+
+
+
+.logo-header {
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.logo-header span {
+    color: #fbc100;
+}
+
+
+
+
+
+
+
+
+
+

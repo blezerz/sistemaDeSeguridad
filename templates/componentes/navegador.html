@@ -1,0 +1,24 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/navegador.css' %}">
+<div class="divBaner">
+    <div class="div-titulo-baner">
+        <p>Titulo banner</p>
+    </div>
+
+    <div class="botones-banner">
+        <a href= "#">PanelAdmin</a>
+        <a href ="{% url 'adminUsuario' %}">Usuarios</a>
+        <a href ="#">accesos</a>
+        <a href ="#">zonas</a>
+    </div>
+
+
+    <div class="boton-cierre-sesion">
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Cerrar sesión</button>
+        </form>
+    </div>
+        
+    
+</div>

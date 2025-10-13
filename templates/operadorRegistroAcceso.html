@@ -1,0 +1,174 @@
+{% extends "baseOperador.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/operadorRegistroAcceso.css' %}">
+{% endblock %}
+
+{% block header_title %}Registro De: {{ zona.nombre }}{% endblock %}
+
+{% block content %}
+<div class="contenedor-principal-operador">
+   
+    <br>
+    <div class="contenedor-camara">
+        <img class="camara" src="{% url 'transmision_camara' %}" alt="Cámara en vivo">
+        <canvas id="canvas-captura" style="display:none;"></canvas>
+        
+    </div>
+
+    <div class="contenedor-formulario-credencial">
+        <p>Escanee su credencial</p>
+        <input id="input-rut" placeholder="1234569874456">
+
+        <p>Información del escaneo:</p>
+        <div id="resultado-rut"></div>
+
+        <p id="contador" style="font-size:20px; font-weight:bold; color:blue;"></p>
+    </div>
+
+</div>
+
+<script>
+const zonaId = "{{ zona.id }}";
+let interval = null;
+let segundos = 5;
+
+function capturarImagen() {
+    const imagenStream = document.querySelector(".camara");
+    const canvas = document.getElementById("canvas-captura");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = imagenStream.naturalWidth || 320;
+    canvas.height = imagenStream.naturalHeight || 240;
+
+    ctx.drawImage(imagenStream, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL("image/jpeg");
+}
+
+function reiniciarFlujo() {
+    clearInterval(interval);
+    segundos = 5;
+    setTimeout(() => {
+        document.getElementById("input-rut").value = "";
+        document.getElementById("resultado-rut").innerHTML = "";
+        document.getElementById("contador").innerHTML = "";
+    }, 3000);
+}
+
+function iniciarConteo(data, resultado, contador) {
+    clearInterval(interval);
+    segundos = 5;
+
+    interval = setInterval(() => {
+        fetch("/estado_rostro/")
+            .then(resp => resp.json())
+            .then(info => {
+                if (info.rostro) {
+                    contador.innerHTML = `Verificación en ${segundos} segundos...`;
+                    segundos--;
+
+                    if (segundos < 0) {
+                        clearInterval(interval);
+                        contador.innerHTML = "Verificación finalizada ✅";
+
+                        const imagen = capturarImagen();
+
+                        fetch("/registrar_ingreso/", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                                "X-CSRFToken": "{{ csrf_token }}"
+                            },
+                            body: `usuario_id=${data.usuario_id}&zona_id=${zonaId}&autorizado=true&imagen=${encodeURIComponent(imagen)}`
+                        })
+                        .then(resp => resp.json())
+                        .then(resp => {
+                            if (resp.ok) {
+                                resultado.innerHTML += `<br><span style="color:green; font-size:1.2em;">✅ Puede ingresar</span>`;
+                            } else {
+                                resultado.innerHTML += `<br><span style="color:red;">${resp.error}</span>`;
+                            }
+                            reiniciarFlujo();
+                        })
+                        .catch(() => {
+                            resultado.innerHTML += `<br><span style="color:red;">Error registrando ingreso</span>`;
+                            reiniciarFlujo();
+                        });
+                    }
+                } else {
+                    // Si se pierde el rostro, reinicia el contador
+                    segundos = 5;
+                    contador.innerHTML = "Esperando rostro...";
+                }
+            });
+    }, 1000);
+}
+
+document.getElementById("input-rut").addEventListener("change", function() {
+    const rut = this.value.trim();
+    if (!rut) return;
+
+    fetch(`/buscar_usuario/?rut=${rut}&zona=${zonaId}`)
+        .then(response => response.json())
+        .then(data => {
+            const resultado = document.getElementById("resultado-rut");
+            const contador = document.getElementById("contador");
+
+            if (data.error) {
+                resultado.innerHTML = `<span style="color:red;">${data.error}</span>`;
+                reiniciarFlujo();
+                return;
+            }
+
+            resultado.innerHTML = `
+                <strong>Nombre:</strong> ${data.nombres} ${data.apellidos}<br>
+                <strong>Teléfono:</strong> ${data.telefono || "No registrado"}<br>
+                <strong>Activo:</strong> ${data.activo ? "Sí" : "No"}<br>
+                <strong>Acceso:</strong> ${data.permiso ? "Permitido ✅" : "Denegado ❌"}
+            `;
+
+            // 🔹 Caso: usuario sin permiso → guardar intento inmediato CON imagen
+            if (!data.permiso) {
+                resultado.innerHTML += `<br><span style="color:red; font-size:1.2em;">❌ No puede ingresar</span>`;
+
+                const imagen = capturarImagen(); // 👈 capturamos rostro al instante
+
+                fetch("/registrar_ingreso/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: `usuario_id=${data.usuario_id}&zona_id=${zonaId}&autorizado=false&comentario=Intento sin permiso&imagen=${encodeURIComponent(imagen)}`
+                })
+                .then(resp => resp.json())
+                .then(resp => {
+                    if (resp.ok) {
+                        resultado.innerHTML += `<br><span style="color:orange;">Registro de intento con foto guardado</span>`;
+                    } else {
+                        resultado.innerHTML += `<br><span style="color:red;">${resp.error}</span>`;
+                    }
+                    reiniciarFlujo();
+                })
+                .catch(() => {
+                    resultado.innerHTML += `<br><span style="color:red;">Error registrando intento</span>`;
+                    reiniciarFlujo();
+                });
+
+                return;
+            }
+
+            // 🔹 Caso: usuario con permiso → iniciar flujo normal
+            iniciarConteo(data, resultado, contador);
+        })
+        .catch(() => {
+            document.getElementById("resultado-rut").innerHTML =
+                `<span style="color:red;">Error en la consulta</span>`;
+            reiniciarFlujo();
+        });
+});
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/prueba.css' %}">
+</head>
+
+<body>
+    <header>
+        <div class="logo-header">TECNO<span>BIM</span>
+        
+            <h1 class="titulo-header">{% block header_title %}Prueba{% endblock %}</h1>
+
+
+        </div>
+        
+    </header>
+    
+        
+
+
+
+
+
+    <div class="main-contenedor">
+
+        {% if mostrar_menu %}
+            {% include "componentes/navegador.html" %}
+        {% endif %}
+
+
+        <!-- Botón único para mostrar/ocultar -->
+        <form method="get" class="boton-despliegue-form">
+            <button type="submit" name="toggle" value="1" class="boton-despliegue-navegador">
+                {% if mostrar_menu %}&gt;{% else %}&lt;{% endif %}
+            </button>
+        </form>
+
+
+        <div class="divContenido">
+            <p>div contenido</p>
+        </div>
+
+        
+    </div>
+    
+    <footer>
+       <div class="footer-container">
+            <div class="footer-column">
+                <div class="footer-logo">TECNO<span>BIM</span></div>
+                <p class="footer-description">
+                    TecnoBim es líder en soluciones tecnológicas <br>para sistemas decontrol de
+                    acceso. <br>Comprometidos con la innovación y la seguridad.
+                </p>
+            </div>
+            <div class="footer-column-contact">
+                <div class="footer-logo">Contacto</div>
+
+                <p><strong>Email:</strong> soporte@tecnobim.cl</p>
+                <p><strong>Teléfono:</strong> +56 9 1234 5678</p>
+                <p><strong>Dirección:</strong> Av. Tecnológica 123, Santiago, Chile</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

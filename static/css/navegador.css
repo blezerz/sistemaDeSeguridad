@@ -1,0 +1,125 @@
+.divBaner{
+    display: flex  ;
+
+
+    width: 15%;
+    height: 100%;
+
+    background-color: #627f9c;
+
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+
+    transition: transform 0.8s ease-in-out, opacity 0.8s ease-in-out;
+}
+
+
+.divBaner.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+}   
+
+
+.div-titulo-baner{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    margin-top: 20%;
+    border-bottom: white solid 1px;
+    width: 80%;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 5%;
+    margin-bottom: 8%;
+
+}
+.div-titulo-baner p {
+    display: flex;
+
+    margin: 0;
+    padding: 0;   
+
+}
+
+
+
+.botones-banner{
+   
+
+   width: 99%;
+   display: flex;
+   flex-direction: column;
+   padding-top: 5%;
+
+}
+
+
+
+.botones-banner a{
+
+    background-color: rgb(206, 206, 206);
+    border-radius: 0.5rem;
+
+    text-decoration: none;
+    text-align: center;
+
+    margin: 3% 0%
+    
+
+
+}
+
+.botones-banner p{
+
+
+  
+    background-color: rgb(206, 206, 206);
+    border-radius: 0.5rem;
+    margin: 4%;
+    width: 50%;
+}
+
+
+
+
+
+
+
+
+.botones-banner a:hover {
+    background: #003973;    /* color al pasar el mouse */
+}
+
+
+
+
+.boton-cierre-sesion {
+    margin-top: auto;          /* lo empuja al fondo del contenedor padre */
+    width: 100%;
+    display: flex;
+}
+
+.boton-cierre-sesion form {
+    width: 100%;               /* el form ocupa todo el ancho */
+    margin: 0;                 /* sin márgenes extras */
+}
+
+.logout-btn {
+    width: 100%;               /* botón al 100% */
+    background-color: #c0392b; /* rojo fuerte */
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    text-align: center;
+    padding: 12px 0;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    margin-bottom: 15%;
+}
+
+.logout-btn:hover {
+    background-color: #e74c3c; /* rojo más claro al hover */
+    transform: translateY(-2px); /* pequeño efecto de levantado */
+}

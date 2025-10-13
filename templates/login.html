@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+    <header class="headerLogin">
+        <div class="logo-header">TECNO<span>BIM</span>
+        
+            <h1 class="titulo-header">Prueba</h1>
+
+
+        </div>
+        
+    </header>
+
+
+
+    <div class="box-login">
+       <h2>Iniciar Sesión</h2>
+        <form method="post" class="form-login">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Usuario</label>
+                <input type="text" name="username" id="id_username" placeholder="Ingresa tu usuario">
+            </div>
+            <div class="form-group">
+                <label for="id_password">Contraseña</label>
+                <input type="password" name="password" id="id_password" placeholder="Ingresa tu contraseña">
+            </div>
+            <button type="submit">Entrar</button>
+        </form>
+    </div>
+    
+
+
+
+    <footer>
+       <div class="footer-container">
+            <div class="footer-column">
+                <div class="footer-logo">TECNO
+                    <span>BIM</span>
+                </div>
+                <p class="footer-description">
+                    TecnoBim es líder en soluciones tecnológicas <br>para sistemas decontrol de
+                    acceso. <br>Comprometidos con la innovación y la seguridad.
+                </p>
+            </div>
+
+
+
+            <div class="footer-column-contact">
+                <div class="footer-logo">Contacto</div>
+
+                <p><strong>Email:</strong> soporte@tecnobim.cl</p>
+                <p><strong>Teléfono:</strong> +56 9 1234 5678</p>
+                <p><strong>Dirección:</strong> Av. Tecnológica 123, Santiago, Chile</p>
+            </div>
+        </div>
+    </footer>
+
+    
+</body>
+</html>

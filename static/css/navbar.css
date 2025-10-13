@@ -1,0 +1,95 @@
+.navbar {
+
+    background: rgba(0, 91, 187, 0.9); /* azul semi-transparente */
+
+    color: white;
+    display: flex;
+    justify-content: space-between;
+
+    padding: 10px 30px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+
+    top: 0;
+    z-index: 1000;
+    height: 10%;
+    flex-direction: row;
+    
+}
+.navbar-links{
+    /* Mantener layout horizontal de enlaces */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;               /* espacio consistente entre botones */
+    list-style: none;         /* quitar viñetas si es <ul> */
+    margin: 0;
+    padding: 0;
+}
+
+/* Botones/enlaces del menú */
+.navbar-links li { list-style: none; }
+
+.navbar-links a{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;            /* tamaño visual del botón */
+    padding: 0 14px;         /* mantener .navbar sin crecer en altura */
+    border-radius: 8px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: .2px;
+    background: transparent; /* pill transparente por defecto */
+    transition: background-color .2s ease, box-shadow .2s ease, transform .06s ease;
+}
+
+.navbar-links a:hover{
+    background: rgba(255,255,255,0.14);
+}
+
+.navbar-links a:focus-visible{
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.35) inset;
+    background: rgba(255,255,255,0.18);
+}
+
+.navbar-links a:active{
+    transform: translateY(1px);
+}
+
+/* Alinear y resetear el formulario del cierre de sesión */
+.navbar form{ 
+    margin: 0; 
+}
+
+/* Botón de Cerrar Sesión (más enfático) */
+.logout-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(220, 53, 69, 0.9);  /* rojo semi-transparente */
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: .2px;
+    cursor: pointer;
+    transition: background-color .2s ease, box-shadow .2s ease, transform .06s ease;
+}
+
+.logout-btn:hover{
+    background: rgba(220, 53, 69, 1);
+    box-shadow: 0 2px 12px rgba(220,53,69,0.35);
+}
+
+.logout-btn:focus-visible{
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(220,53,69,0.45) inset;
+}
+
+.logout-btn:active{
+    transform: translateY(1px);
+}

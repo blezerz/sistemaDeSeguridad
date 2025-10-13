@@ -1,0 +1,61 @@
+{% extends "baseOperador.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/inicioOperador.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+{% endblock %}
+
+{% block header_title %}Inicio Operador{% endblock %}
+
+{% block content %}
+<div class="contenedor-principal-operador">
+    <div class="barra-superior-operador">
+        
+        <a href="{% url 'logout' %}" class="boton-cerrar-sesion">
+            <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+        </a>
+    </div>
+    <div class="zona-lista">
+        <h2>Lista de Zonas</h2>
+        <ul class="zona-ul">
+            {% for zona in zonas %}
+                <li class="zona-item">
+                    <a href="{% url 'operadorRegistroAcceso' zona.id %}" class="zona-link">
+                        <i class="fa-solid {% if zona.get_tipo_zona_display == 'Segura' %}fa-lock{% else %}fa-globe{% endif %}"></i>
+                        <span class="zona-nombre">{{ zona.nombre }}</span>
+                        <span class="zona-tipo">{{ zona.get_tipo_zona_display }}</span>
+                    </a>
+                </li>
+            {% empty %}
+                <li class="no-zonas">No hay zonas registradas</li>
+            {% endfor %}
+        </ul>
+
+        {% if zonas.has_other_pages %}
+        <div class="paginacion">
+            {% if zonas.has_previous %}
+                <a href="?page={{ zonas.previous_page_number }}" class="paginacion-boton"><i class="fa-solid fa-angle-left"></i></a>
+            {% else %}
+                <span class="paginacion-boton disabled"><i class="fa-solid fa-angle-left"></i></span>
+            {% endif %}
+
+            {% for num in zonas.paginator.page_range %}
+                {% if zonas.number == num %}
+                    <span class="paginacion-num activo">{{ num }}</span>
+                {% elif num > zonas.number|add:'-3' and num < zonas.number|add:'3' %}
+                    <a href="?page={{ num }}" class="paginacion-num">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if zonas.has_next %}
+                <a href="?page={{ zonas.next_page_number }}" class="paginacion-boton"><i class="fa-solid fa-angle-right"></i></a>
+            {% else %}
+                <span class="paginacion-boton disabled"><i class="fa-solid fa-angle-right"></i></span>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

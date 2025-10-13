@@ -1,0 +1,222 @@
+/* ======== CONTENEDOR PRINCIPAL ======== */
+.contenedor-principal-operador {
+    width: 100%;
+    height: 100%;
+    max-height: calc(100vh - 70px - 85px); /* Resta header y footer */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: transparent;
+    position: relative;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #fbc100 #003973;
+    scroll-behavior: smooth; /* scroll suave */
+}
+
+/* Scrollbar personalizado */
+.contenedor-principal-operador::-webkit-scrollbar {
+    width: 8px;
+}
+.contenedor-principal-operador::-webkit-scrollbar-thumb {
+    background: #fbc100;
+    border-radius: 10px;
+}
+.contenedor-principal-operador::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+}
+
+/* ======== BARRA SUPERIOR (FLotante y sin afectar layout) ======== */
+.barra-superior-operador {
+    position: fixed; /* 👈 la sacamos completamente del flujo */
+    top: 90px;       /* justo debajo del header */
+    right: 30px;
+    z-index: 1000;
+}
+
+/* ======== BOTÓN CERRAR SESIÓN ======== */
+.boton-cerrar-sesion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #fbc100, #ffd84d);
+    color: #003973;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+    border: 2px solid transparent;
+    font-size: 0.9rem;
+}
+
+.boton-cerrar-sesion i {
+    font-size: 1rem;
+}
+
+.boton-cerrar-sesion:hover {
+    background: linear-gradient(135deg, #ffd84d, #fbc100);
+    color: #002b5c;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
+    border-color: #003973;
+}
+
+/* ======== LISTA DE ZONAS ======== */
+.zona-lista {
+    margin-top: 90px; /* espacio debajo del header */
+    width: 70%;
+    max-width: 800px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    border-radius: 15px;
+    padding: 30px 40px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    color: #fff;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Título */
+.zona-lista h2 {
+    text-align: center;
+    color: #fbc100;
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(0,0,0,0.4);
+}
+
+.zona-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* ======== CADA ZONA ======== */
+.zona-item {
+    margin-bottom: 12px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,255,255,0.15);
+    transition: transform 0.25s ease, background 0.3s ease;
+}
+
+.zona-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    color: #fff;
+    padding: 15px 18px;
+    gap: 15px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Ícono */
+.zona-link i {
+    font-size: 1.3rem;
+    color: #fbc100;
+    transition: transform 0.25s ease;
+}
+
+/* Nombre y tipo */
+.zona-nombre {
+    flex: 1;
+    font-weight: 600;
+}
+
+.zona-tipo {
+    background: #fbc100;
+    color: #003973;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+/* Hover */
+.zona-item:hover {
+    transform: translateY(-4px);
+    background: rgba(251, 193, 0, 0.15);
+    border-color: rgba(251, 193, 0, 0.5);
+}
+.zona-item:hover i {
+    transform: scale(1.2);
+}
+
+.no-zonas {
+    text-align: center;
+    color: #ddd;
+    font-style: italic;
+    margin-top: 20px;
+}
+
+/* ======== PAGINACIÓN ======== */
+.paginacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.paginacion-boton,
+.paginacion-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #003973;
+    background: linear-gradient(145deg, #fbc100, #ffd84d);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    text-decoration: none;
+    border: none;
+    transition: all 0.25s ease-in-out;
+    cursor: pointer;
+}
+
+.paginacion-boton i {
+    font-size: 1rem;
+}
+
+.paginacion-boton:hover,
+.paginacion-num:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+    background: linear-gradient(145deg, #ffe47a, #fbc100);
+}
+
+.paginacion-num.activo {
+    background: linear-gradient(145deg, #003973, #0055aa);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    border: 2px solid #fbc100;
+    transform: scale(1.05);
+}
+
+.paginacion-boton.disabled {
+    background: #777;
+    color: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.paginacion a, 
+.paginacion span {
+    color: inherit;
+}
+
+/* ======== ANIMACIÓN ======== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
