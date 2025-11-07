@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block header_title %}Detalle de Zona{% endblock %}
+
+{% block content %}
+<div class="contenedor-admin">
+    <h2>Detalle de Zona</h2>
+
+    <!-- Información de la zona -->
+    <form method="POST" class="form-zona">
+        {% csrf_token %}
+        <div class="campo-form">
+            <label>Nombre:</label>
+            <input type="text" name="nombre" value="{{ zona.nombre }}" required>
+        </div>
+
+        <div class="campo-form">
+            <label>Descripción:</label>
+            <textarea name="descripcion" rows="2">{{ zona.descripcion }}</textarea>
+        </div>
+
+        <div class="campo-form">
+            <label>Tipo de Zona:</label>
+            <select name="tipo_zona">
+                <option value="publica" {% if zona.tipo_zona == 'publica' %}selected{% endif %}>Pública</option>
+                <option value="segura" {% if zona.tipo_zona == 'segura' %}selected{% endif %}>Segura</option>
+            </select>
+        </div>
+
+        <div class="acciones-zona">
+            <a href="{% url 'adminZonas' %}" class="btn-volver"><i class="fa-solid fa-arrow-left"></i> Volver</a>
+            <button type="submit" class="btn-guardar"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+            <button type="button" class="btn-eliminar" onclick="confirmarEliminacion({{ zona.id }})">
+                <i class="fa-solid fa-trash"></i> Eliminar
+            </button>
+        </div>
+    </form>
+
+    <!-- Panel pequeño de permisos -->
+    <details class="panel-permisos">
+        <summary><i class="fa-solid fa-user-shield"></i> Gestionar permisos</summary>
+
+        <form method="get" action="" class="buscador-usuarios">
+            <input type="text" name="q" placeholder="Buscar por nombre o RUT" value="{{ query }}" class="input-buscar">
+            <button type="submit" class="btn-buscar">Buscar</button>
+            {% if query %}
+                <a href="{% url 'ver_zona' zona.id %}" class="btn-limpiar">Limpiar</a>
+            {% endif %}
+        </form>
+
+        <div class="contenedor-tabla-mini">
+            <table class="tabla-mini">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>RUT</th>
+                        <th>Acceso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for permiso in permisos %}
+                    <tr>
+                        <td>{{ permiso.usuario.nombres }} {{ permiso.usuario.apellidos }}</td>
+                        <td>{{ permiso.usuario.rut }}</td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" data-id="{{ permiso.id }}" {% if permiso.acceso_habilitado %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="sin-registros">No hay usuarios</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </details>
+</div>
+
+<script>
+document.querySelectorAll('.switch input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', function() {
+        fetch("{% url 'cambiar_permiso_zona' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                permiso_id: this.dataset.id,
+                acceso_habilitado: this.checked
+            })
+        }).then(res => res.json()).then(data => {
+            if (!data.success) alert("Error al actualizar el permiso.");
+        }).catch(() => alert("Error de conexión."));
+    });
+});
+
+function confirmarEliminacion(id) {
+    if (confirm("¿Seguro que deseas eliminar esta zona? Esta acción no se puede deshacer.")) {
+        window.location.href = "{% url 'eliminar_zona' zona.id %}";
+    }
+}
+</script>
+
+<style>
+.contenedor-admin {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    width: 55%; /* 👈 más angosto */
+    margin: 30px auto;
+}
+
+/* Campos */
+.campo-form {
+    margin-bottom: 8px;
+}
+.campo-form label {
+    font-weight: bold;
+    color: #003973;
+    display: block;
+    margin-bottom: 2px;
+    font-size: 0.85rem;
+}
+.campo-form input, .campo-form textarea, .campo-form select {
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 0.85rem;
+}
+
+/* Botones */
+.acciones-zona {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+}
+.btn-volver, .btn-guardar, .btn-eliminar {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+.btn-volver { background: #777; }
+.btn-guardar { background: #003973; }
+.btn-eliminar { background: #b30000; }
+
+/* Panel mini */
+.panel-permisos {
+    margin-top: 20px;
+    background: #f4f6f9;
+    border-radius: 6px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+}
+.panel-permisos summary {
+    font-weight: 600;
+    color: #003973;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.panel-permisos[open] {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* Buscador */
+.buscador-usuarios {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin: 10px 0;
+}
+.input-buscar {
+    padding: 5px;
+    width: 180px;
+    border-radius: 5px;
+    border: 1px solid #bbb;
+    font-size: 0.8rem;
+}
+.btn-buscar, .btn-limpiar {
+    background: #003973;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.btn-limpiar {
+    background: #777;
+}
+
+/* Mini tabla */
+.contenedor-tabla-mini {
+    max-height: 150px;
+    overflow-y: auto;
+    margin-top: 5px;
+}
+.tabla-mini {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+.tabla-mini th, .tabla-mini td {
+    border: 1px solid #ccc;
+    padding: 5px;
+    text-align: center;
+}
+.tabla-mini th {
+    background: #003973;
+    color: white;
+}
+.sin-registros {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+/* Switch más pequeño */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 18px;
+}
+.switch input { display: none; }
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .3s;
+  border-radius: 18px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 12px; width: 12px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #3ddc84;
+}
+input:checked + .slider:before {
+  transform: translateX(16px);
+}
+</style>
+{% endblock %}

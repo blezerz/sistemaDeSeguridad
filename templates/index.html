@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "baseOperador.html" %}
 
 {% block title %}Inicio{% endblock %}
 
@@ -7,4 +7,5 @@
 {% block content %}
     <h2>Bienvenido al Sistema de Seguridad TecnoBim</h2>
     <p>Seleccione una opción del menú para continuar.</p>
+    <a href ="{% url 'login' %}">Login</a>
 {% endblock %}

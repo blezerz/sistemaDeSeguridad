@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block header_title %}Inicio Admin{% endblock %}
+
+{% block content %}
+    <div class="contenedor-admin">
+        <h2>Gestión de Usuarios</h2>
+
+        <!--  Buscador -->
+        <div class="acciones-superiores">
+            <form method="get" action="" class="buscador-usuarios">
+                <input type="text" name="q" placeholder="Buscar por nombre o RUT" value="{{ query }}" class="input-buscar">
+                <button type="submit" class="btn-buscar">Buscar</button>
+                {% if query %}
+                    <a href="{% url 'adminUsuario' %}" class="btn-limpiar">Limpiar</a>
+                {% endif %}
+            </form>
+
+            <!-- 🔹 Botón para crear nuevo usuario -->
+            <a href="{% url 'crear_usuario' %}" class="btn-nuevo-usuario">
+                <i class="fa-solid fa-user-plus"></i> Nuevo usuario
+            </a>
+        </div>
+
+
+        <!-- Tabla -->
+        <table class="tabla-usuarios">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>RUT</th>
+                    <th>Teléfono</th>
+                    <th>Activo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                    <tr class="fila-click" onclick="window.location.href='{% url 'ver_usuario' u.id %}'">
+                        <td>{{ u.id }}</td>
+                        <td>{{ u.nombres }}</td>
+                        <td>{{ u.apellidos }}</td>
+                        <td>{{ u.rut }}</td>
+                        <td>{{ u.telefono|default:"-" }}</td>
+                        <td>
+                            {% if u.activo %}
+                                <span class="activo">Activo</span>
+                            {% else %}
+                                <span class="inactivo">Inactivo</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="sin-registros">No se encontraron usuarios</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        
+
+        <!-- 🔄 Paginación -->
+        <div class="paginacion">
+            {% if usuarios.has_previous %}
+                <a href="?page=1{% if query %}&q={{ query }}{% endif %}">« Primero</a>
+                <a href="?page={{ usuarios.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">‹ Anterior</a>
+            {% endif %}
+
+            <span>Página {{ usuarios.number }} de {{ usuarios.paginator.num_pages }}</span>
+
+            {% if usuarios.has_next %}
+                <a href="?page={{ usuarios.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Siguiente ›</a>
+                <a href="?page={{ usuarios.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">Último »</a>
+            {% endif %}
+        </div>
+    </div>
+
+
+<style>
+    
+/* 🔹 CONTENEDOR GENERAL */
+.contenedor-admin {
+    width: 90%;
+    margin: 25px auto;
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    overflow-y: auto;               /* 👈 scroll si el contenido crece */
+    max-height: calc(100vh - 180px);/* evita que tape el footer */
+}
+
+/* 🔹 TÍTULO PRINCIPAL */
+.contenedor-admin h2 {
+    color: #003973;
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 25px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* 🔹 ZONA DE ACCIONES SUPERIORES (buscador + botón) */
+.acciones-superiores {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+/* 🔸 Buscador */
+.buscador-usuarios {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-buscar {
+    padding: 8px 10px;
+    width: 250px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input-buscar:focus {
+    border-color: #003973;
+    box-shadow: 0 0 4px rgba(0,57,115,0.4);
+}
+
+.btn-buscar,
+.btn-limpiar {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-buscar {
+    background: #003973;
+    color: white;
+}
+
+.btn-buscar:hover {
+    background: #0055aa;
+}
+
+.btn-limpiar {
+    background: #888;
+    color: white;
+}
+
+.btn-limpiar:hover {
+    background: #666;
+}
+
+/* 🔸 Botón “Nuevo usuario” */
+.btn-nuevo-usuario {
+    background: linear-gradient(135deg, #003973, #0055aa);
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: all 0.25s ease;
+}
+
+.btn-nuevo-usuario:hover {
+    background: linear-gradient(135deg, #004d92, #0073e6);
+    transform: translateY(-2px);
+}
+
+/* 🔹 TABLA DE USUARIOS */
+.tabla-usuarios {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabla-usuarios th, 
+.tabla-usuarios td {
+    border: 1px solid #ddd;
+    padding: 10px 12px;
+    text-align: center;
+    transition: background 0.2s ease;
+}
+
+.tabla-usuarios th {
+    background: #003973;
+    color: #fff;
+    font-weight: bold;
+}
+
+.tabla-usuarios td {
+    color: #222;
+    background: #fff;
+}
+
+.fila-click {
+    cursor: pointer;
+}
+
+.fila-click:hover td {
+    background: #eaf3ff;
+}
+
+/* 🔹 ESTADOS */
+.activo {
+    color: #00a859;
+    font-weight: bold;
+}
+
+.inactivo {
+    color: #d93025;
+    font-weight: bold;
+}
+
+/* 🔹 PAGINACIÓN */
+.paginacion {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: 600;
+    color: #003973;
+}
+
+.paginacion a {
+    margin: 0 5px;
+    color: #003973;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.paginacion a:hover {
+    color: #0073e6;
+}
+
+.sin-registros {
+    text-align: center;
+    font-style: italic;
+    color: #666;
+}
+
+</style>
+
+
+{% endblock %}

@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block header_title %}Detalle del Usuario{% endblock %}
+
+{% block content %}
+<div class="contenedor-ver-usuario">
+    <h2>Detalle del Usuario</h2>
+
+    <div class="tarjeta-usuario">
+        <div class="fila-dato">
+            <label>ID:</label>
+            <span>{{ usuario.id }}</span>
+        </div>
+
+        <div class="fila-dato">
+            <label>Nombres:</label>
+            <span id="campo-nombres">{{ usuario.nombres }}</span>
+        </div>
+
+        <div class="fila-dato">
+            <label>Apellidos:</label>
+            <span id="campo-apellidos">{{ usuario.apellidos }}</span>
+        </div>
+
+        <div class="fila-dato">
+            <label>RUT:</label>
+            <span id="campo-rut">{{ usuario.rut }}</span>
+        </div>
+
+        <div class="fila-dato">
+            <label>Teléfono:</label>
+            <span id="campo-telefono">{{ usuario.telefono|default:"-" }}</span>
+        </div>
+
+        <div class="fila-dato">
+            <label>Activo:</label>
+            <span id="campo-activo">
+                {% if usuario.activo %}
+                    <input type="checkbox" id="input-activo" checked disabled>
+                {% else %}
+                    <input type="checkbox" id="input-activo" disabled>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
+    <div class="acciones-usuario">
+    <a href="{% url 'adminUsuario' %}" class="btn-volver">
+        <i class="fa-solid fa-arrow-left"></i> Volver
+    </a>
+
+    <button id="btn-editar" class="btn-editar" onclick="activarEdicion()">
+        <i class="fa-solid fa-pen-to-square"></i> Editar usuario
+    </button>
+
+    <button id="btn-eliminar" class="btn-eliminar" onclick="confirmarEliminacion({{ usuario.id }})">
+        <i class="fa-solid fa-trash-can"></i> Eliminar usuario
+    </button>
+</div>
+</div>
+
+<style>
+/* ======== CONTENEDOR GENERAL ======== */
+.contenedor-ver-usuario {
+    width: 85%;
+    margin: 40px auto;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    padding: 30px 40px;
+    max-width: 800px;
+    color: #003973;
+}
+
+/* ======== TÍTULO ======== */
+.contenedor-ver-usuario h2 {
+    text-align: center;
+    color: #003973;
+    margin-bottom: 25px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* ======== TARJETA ======== */
+.tarjeta-usuario {
+    background: linear-gradient(135deg, #f9fafc, #e9eef5);
+    border-radius: 10px;
+    padding: 25px 30px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* ======== FILA DE DATO ======== */
+.fila-dato {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #c9d6e2;
+    padding-bottom: 8px;
+}
+
+.fila-dato label {
+    font-weight: 700;
+    color: #002b5c;
+    width: 160px;
+}
+
+.fila-dato span,
+.input-editar {
+    flex: 1;
+    color: #222;
+    font-size: 1rem;
+}
+
+/* ======== INPUTS ======== */
+.input-editar {
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    padding: 5px 8px;
+    outline: none;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+}
+
+.input-editar:focus {
+    border-color: #003973;
+    box-shadow: 0 0 4px rgba(0,57,115,0.3);
+}
+
+/* ======== BOTONES ======== */
+.acciones-usuario {
+    text-align: center;
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-volver, .btn-editar {
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 10px 18px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+.btn-volver {
+    background: linear-gradient(135deg, #555, #777);
+}
+
+.btn-editar {
+    background: linear-gradient(135deg, #003973, #0055aa);
+}
+
+.btn-volver:hover {
+    background: linear-gradient(135deg, #444, #666);
+    transform: translateY(-2px);
+}
+
+.btn-editar:hover {
+    background: linear-gradient(135deg, #004d92, #0073e6);
+    transform: translateY(-2px);
+}
+
+.btn-eliminar {
+    background: linear-gradient(135deg, #b40000, #e60000);
+}
+.btn-eliminar:hover {
+    background: linear-gradient(135deg, #a00000, #ff1a1a);
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+function activarEdicion() {
+    const campos = ['nombres', 'apellidos', 'rut', 'telefono'];
+    const boton = document.getElementById("btn-editar");
+    
+    // Si ya estamos en modo edición → guardar
+    if (boton.dataset.modo === "edicion") {
+        guardarCambios();
+        return;
+    }
+
+    // Cambiar texto y modo
+    boton.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar cambios';
+    boton.dataset.modo = "edicion";
+
+    campos.forEach(campo => {
+        const span = document.getElementById(`campo-${campo}`);
+        const valor = span.textContent.trim();
+        span.innerHTML = `<input type="text" id="input-${campo}" value="${valor}" class="input-editar">`;
+    });
+
+    // Activar checkbox
+    document.getElementById("input-activo").disabled = false;
+}
+
+function guardarCambios() {
+    const boton = document.getElementById("btn-editar");
+    const campos = ['nombres', 'apellidos', 'rut', 'telefono'];
+    const datos = {};
+
+    campos.forEach(campo => {
+        const input = document.getElementById(`input-${campo}`);
+        if (input) {
+            datos[campo] = input.value.trim();
+        }
+    });
+
+    const activo = document.getElementById("input-activo");
+    datos["activo"] = activo.checked;
+
+    fetch("{% url 'editar_usuario_ajax' usuario.id %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify(datos)
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        if (data.success) {
+            // Restaurar visualización
+            document.getElementById(`campo-nombres`).textContent = datos["nombres"];
+            document.getElementById(`campo-apellidos`).textContent = datos["apellidos"];
+            document.getElementById(`campo-rut`).textContent = datos["rut"];
+            document.getElementById(`campo-telefono`).textContent = datos["telefono"];
+            
+            const campoActivo = document.getElementById(`campo-activo`);
+            campoActivo.innerHTML = datos["activo"]
+                ? `<input type="checkbox" id="input-activo" checked disabled>`
+                : `<input type="checkbox" id="input-activo" disabled>`;
+
+            boton.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Editar usuario';
+            boton.dataset.modo = "ver";
+            alert("Cambios guardados correctamente.");
+        } else {
+            alert("Error al guardar los cambios.");
+        }
+    })
+    .catch(() => alert("Error de conexión al servidor."));
+}
+
+
+
+function confirmarEliminacion(id) {
+    if (confirm("¿Estás seguro de que deseas eliminar este usuario del sistema?")) {
+        fetch(`/eliminarUsuario/${id}/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.success) {
+                alert("Usuario eliminado correctamente.");
+                window.location.href = "{% url 'adminUsuario' %}";
+            } else {
+                alert("Error al eliminar el usuario: " + (data.error || ""));
+            }
+        })
+        .catch(() => alert("Error de conexión al servidor."));
+    }
+}
+</script>
+{% endblock %}

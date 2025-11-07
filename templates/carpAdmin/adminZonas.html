@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block header_title %}Gestión de Zonas{% endblock %}
+
+{% block content %}
+<div class="contenedor-admin">
+    <h2>Gestión de Zonas</h2>
+
+    <!-- 🔍 Buscador + botón crear -->
+    <div class="acciones-superiores">
+        <form method="get" action="" class="buscador-zonas">
+            <input type="text" name="q" placeholder="Buscar por nombre o descripción" value="{{ query }}" class="input-buscar">
+            <button type="submit" class="btn-buscar">Buscar</button>
+            {% if query %}
+                <a href="{% url 'adminZonas' %}" class="btn-limpiar">Limpiar</a>
+            {% endif %}
+        </form>
+
+        <a href="{% url 'crear_zona' %}" class="btn-nueva-zona">
+            <i class="fa-solid fa-plus"></i> Nueva Zona
+        </a>
+    </div>
+
+    <!-- 🧾 Tabla -->
+    <table class="tabla-zonas">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for z in zonas %}
+                <tr class="fila-click" onclick="window.location.href='{% url 'ver_zona' z.id %}'">
+                    <td>{{ z.id }}</td>
+                    <td>{{ z.nombre }}</td>
+                    <td>
+                        {% if z.tipo_zona == 'segura' %}
+                            <span class="tipo-segura">Segura</span>
+                        {% else %}
+                            <span class="tipo-publica">Pública</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ z.descripcion|default:"Sin descripción" }}</td>
+                </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="sin-registros">No hay zonas registradas</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 🔄 Paginación -->
+    <div class="paginacion">
+        {% if zonas.has_previous %}
+            <a href="?page=1{% if query %}&q={{ query }}{% endif %}">« Primero</a>
+            <a href="?page={{ zonas.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">‹ Anterior</a>
+        {% endif %}
+
+        <span>Página {{ zonas.number }} de {{ zonas.paginator.num_pages }}</span>
+
+        {% if zonas.has_next %}
+            <a href="?page={{ zonas.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Siguiente ›</a>
+            <a href="?page={{ zonas.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">Último »</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 🎨 Estilos -->
+<style>
+.contenedor-admin {
+    width: 90%;
+    margin: 25px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    color: #003973;
+}
+
+h2 {
+    text-align: center;
+    color: #003973;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.acciones-superiores {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.buscador-zonas {
+    display: flex;
+    gap: 10px;
+}
+
+.input-buscar {
+    padding: 8px;
+    width: 250px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.btn-buscar {
+    padding: 8px 14px;
+    background: #003973;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.btn-limpiar {
+    background: #999;
+    color: white;
+    border-radius: 6px;
+    padding: 8px 12px;
+    text-decoration: none;
+}
+.btn-nueva-zona {
+    background: #0a66c2;
+    color: white;
+    text-decoration: none;
+    padding: 9px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+.btn-nueva-zona:hover { background: #004a91; }
+
+.tabla-zonas {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.tabla-zonas th, .tabla-zonas td {
+    border: 1px solid #ddd;
+    padding: 12px 10px;
+    text-align: center;
+    transition: background 0.25s ease;
+}
+.tabla-zonas th {
+    background: #003973;
+    color: white;
+    font-weight: bold;
+}
+.fila-click {
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.1s ease;
+}
+.fila-click:hover {
+    background: #f0f6ff;
+    transform: scale(1.01);
+}
+
+.tipo-segura {
+    background: #ff4747;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+.tipo-publica {
+    background: #3ddc84;
+    color: #003973;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.paginacion {
+    text-align: center;
+    margin-top: 20px;
+}
+.paginacion a {
+    margin: 0 5px;
+    color: #003973;
+    text-decoration: none;
+    font-weight: bold;
+}
+.sin-registros {
+    text-align: center;
+    font-style: italic;
+    color: #777;
+}
+</style>
+{% endblock %}

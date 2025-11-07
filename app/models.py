@@ -61,3 +61,60 @@ class ImagenRegistro(models.Model):
 
     def __str__(self):
         return f"Imagen de ingreso {self.ingreso}"
+    
+
+
+
+    # ==========================================================
+# 6. Gestión de Vehículos y GPS
+# ==========================================================
+
+# Conductor
+class Conductor(models.Model):
+    nombres = models.CharField(max_length=100)
+    apellidos = models.CharField(max_length=100)
+    rut = models.CharField(max_length=12, unique=True)
+    telefono = models.CharField(max_length=15, null=True, blank=True)
+    licencia = models.CharField(max_length=20, null=True, blank=True)
+    activo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.nombres} {self.apellidos} - {self.rut}"
+
+
+# GPS
+class GPS(models.Model):
+    codigo_gps = models.CharField(max_length=50, unique=True)
+    coordenada_lat = models.FloatField(null=True, blank=True)
+    coordenada_long = models.FloatField(null=True, blank=True)
+    fecha_hora = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"GPS {self.codigo_gps}"
+
+
+# Vehículo
+class Vehiculo(models.Model):
+    patente = models.CharField(max_length=10, unique=True)
+    marca = models.CharField(max_length=50)
+    modelo = models.CharField(max_length=50)
+    anio = models.PositiveIntegerField()
+    color = models.CharField(max_length=30, null=True, blank=True)
+    activo = models.BooleanField(default=True)
+    conductor = models.ForeignKey(Conductor, on_delete=models.SET_NULL, null=True, blank=True, related_name='vehiculos')
+    gps = models.OneToOneField(GPS, on_delete=models.SET_NULL, null=True, blank=True, related_name='vehiculo')
+
+    def __str__(self):
+        return f"{self.patente} - {self.marca} {self.modelo}"
+
+
+# Historial de ubicaciones
+class HistorialUbicacion(models.Model):
+    gps = models.ForeignKey(GPS, on_delete=models.CASCADE, related_name='historial')
+    latitud = models.FloatField()
+    longitud = models.FloatField()
+    fecha_hora = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Historial {self.gps.codigo_gps} - {self.fecha_hora.strftime('%d/%m/%Y %H:%M')}"
+

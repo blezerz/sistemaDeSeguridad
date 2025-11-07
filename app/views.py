@@ -21,7 +21,7 @@ rostro_detectado = False
 
 
 def index(request):
-    return movimiento_boton_navegador(request, 'index.html')
+    return render(request, 'index.html')
 
 def login_view(request):
     if request.method == "POST":
@@ -38,9 +38,9 @@ def login_view(request):
 
             # Verificar grupos
             if user.groups.filter(name="Administrador").exists():
-                return redirect("../inicioAdmin/")
+                return redirect("../carpAdmin/inicioAdmin/")
             elif user.groups.filter(name="Operador").exists():
-                return redirect("../inicioOperador/")
+                return redirect("../carpOperador/inicioOperador/")
             elif user.groups.filter(name="UsuarioBasico").exists():
                 return redirect("../inicioUsuarioBasico")
             else:
@@ -58,21 +58,6 @@ def logout_view(request):
     return redirect("../login")
 
 
-def prueba(request):
-    # Estado inicial: siempre True la primera vez
-    if "mostrar_menu" not in request.session:
-        request.session["mostrar_menu"] = True
-
-    mostrar_menu = request.session["mostrar_menu"]
-
-    # ⚡ Solo cambiar si llega el toggle
-    if "toggle" in request.GET:
-        mostrar_menu = not mostrar_menu
-        request.session["mostrar_menu"] = mostrar_menu
-        # Redirigir para limpiar la URL y evitar doble toggle al F5
-        return redirect("prueba")  # 👈 usa el name de tu URL en urls.py
-
-    return render(request, "prueba.html", {"mostrar_menu": mostrar_menu})
 
 
 
@@ -80,8 +65,6 @@ def prueba(request):
 
 
 def baseOperador(request):
-
-
     return render(request, "baseOperador.html")
 
 
@@ -108,7 +91,7 @@ def movimiento_boton_navegador(request, template, context=None):
 
 
 def inicioAdmin(request):
-    return movimiento_boton_navegador(request, "inicioAdmin.html")
+    return movimiento_boton_navegador(request, "carpAdmin/inicioAdmin.html")
 
 
 
@@ -119,14 +102,14 @@ def inicioOperador(request):
     page_number = request.GET.get('page')
     zonas = paginator.get_page(page_number)
 
-    return movimiento_boton_navegador(request, "inicioOperador.html", {
+    return movimiento_boton_navegador(request, "carpOperador/inicioOperador.html", {
         "zonas": zonas,
         "paginator": paginator,
     })
 
 def operadorRegistroAcceso(request, zona_id):
     zona = Zona.objects.get(id=zona_id)
-    return render(request, "operadorRegistroAcceso.html", {"zona": zona})
+    return render(request, "carpOperador/operadorRegistroAcceso.html", {"zona": zona})
 
 
 def inicioUsuarioBasico(request):
@@ -251,4 +234,241 @@ def registrar_ingreso(request):
 
 
 def adminUsuario(request):
-    return movimiento_boton_navegador(request, "adminUsuario.html")
+    return movimiento_boton_navegador(request, "carpAdmin/adminUsuario.html")
+
+
+
+#adminsitrador
+
+from django.db.models import Q
+
+def adminUsuario(request):
+    # Obtener búsqueda desde el GET
+    query = request.GET.get("q", "").strip()
+    usuarios_list = UsuarioSistema.objects.all().order_by('id')
+
+    # Si hay texto en el buscador, filtramos
+    if query:
+        usuarios_list = usuarios_list.filter(
+            Q(nombres__icontains=query) |
+            Q(apellidos__icontains=query) |
+            Q(rut__icontains=query)
+        )
+
+    # Paginación
+    paginator = Paginator(usuarios_list, 10)  # 10 por página
+    page_number = request.GET.get('page')
+    usuarios = paginator.get_page(page_number)
+
+    # Contexto
+    context = {
+        "usuarios": usuarios,
+        "query": query,
+        "mostrar_menu": request.session.get("mostrar_menu", True),
+    }
+
+    return movimiento_boton_navegador(request, "carpAdmin/adminUsuario.html", context)
+
+
+from django.shortcuts import get_object_or_404
+def ver_usuario(request, usuario_id):
+    usuario = get_object_or_404(UsuarioSistema, id=usuario_id)
+
+    return movimiento_boton_navegador(request, "carpAdmin/verUsuario.html", {
+        "usuario": usuario,
+        "mostrar_menu": request.session.get("mostrar_menu", True),
+    })
+
+
+from django.contrib import messages
+
+
+def crear_usuario(request):
+    if request.method == "POST":
+        nombres = request.POST.get("nombres")
+        apellidos = request.POST.get("apellidos")
+        rut = request.POST.get("rut")
+        telefono = request.POST.get("telefono")
+        password = request.POST.get("password")
+        activo = bool(request.POST.get("activo"))
+
+        # Verificar si el usuario ya existe
+        if UsuarioSistema.objects.filter(rut=rut).exists():
+            messages.error(request, "El RUT ingresado ya está registrado.")
+            return redirect("crear_usuario")
+
+        # Crear el usuario del sistema
+        nuevo_usuario = UsuarioSistema.objects.create(
+            nombres=nombres,
+            apellidos=apellidos,
+            rut=rut,
+            telefono=telefono,
+            activo=activo,
+        )
+
+        # 🔹 Crear permisos automáticos para todas las zonas
+        zonas = Zona.objects.all()
+        permisos_a_crear = []
+
+        for zona in zonas:
+            # Si la zona es pública → acceso habilitado
+            acceso = True if zona.tipo_zona == "publica" else False
+            permisos_a_crear.append(
+                PermisoZona(usuario=nuevo_usuario, zona=zona, acceso_habilitado=acceso)
+            )
+
+        # Guardar todos los permisos de una sola vez
+        PermisoZona.objects.bulk_create(permisos_a_crear)
+
+        messages.success(request, "Usuario del sistema creado correctamente con sus permisos de zona.")
+        return redirect("adminUsuario")
+
+    return movimiento_boton_navegador(request, "carpAdmin/crearUsuario.html")
+
+
+import json
+
+
+@csrf_exempt
+def editar_usuario_ajax(request, usuario_id):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        try:
+            usuario = UsuarioSistema.objects.get(id=usuario_id)
+            for campo, valor in data.items():
+                # Convertir booleano si el campo es activo
+                if campo == "activo":
+                    valor = True if valor in [True, "true", "True", "1"] else False
+                setattr(usuario, campo, valor)
+            usuario.save()
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+    return JsonResponse({"success": False})
+
+
+
+@csrf_exempt
+def eliminar_usuario(request, usuario_id):
+    if request.method == "POST":
+        try:
+            usuario = UsuarioSistema.objects.get(id=usuario_id)
+            usuario.delete()
+            return JsonResponse({"success": True})
+        except UsuarioSistema.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Usuario no encontrado"})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+    return JsonResponse({"success": False, "error": "Método no permitido"})
+
+
+
+#zona 
+
+def adminZonas(request):
+    """Lista de zonas con buscador y paginación."""
+    query = request.GET.get("q", "").strip()
+    zonas_list = Zona.objects.all().order_by("id")
+
+    if query:
+        zonas_list = zonas_list.filter(
+            Q(nombre__icontains=query) | Q(descripcion__icontains=query)
+        )
+
+    paginator = Paginator(zonas_list, 8)
+    page_number = request.GET.get("page")
+    zonas = paginator.get_page(page_number)
+
+    context = {
+        "zonas": zonas,
+        "query": query,
+        "mostrar_menu": request.session.get("mostrar_menu", True),
+    }
+    return movimiento_boton_navegador(request, "carpAdmin/adminZonas.html", context)
+
+
+
+def crear_zona(request):
+    """Crea una nueva zona y genera permisos automáticos para todos los usuarios."""
+    if request.method == "POST":
+        nombre = request.POST.get("nombre")
+        descripcion = request.POST.get("descripcion")
+        tipo_zona = request.POST.get("tipo_zona")
+
+        # Verificar nombre duplicado
+        if Zona.objects.filter(nombre__iexact=nombre).exists():
+            messages.error(request, "Ya existe una zona con ese nombre.")
+            return redirect("crear_zona")
+
+        # Crear la zona
+        nueva_zona = Zona(nombre=nombre, descripcion=descripcion, tipo_zona=tipo_zona)
+        nueva_zona.save()
+
+        # 🔹 Crear permisos automáticos para todos los usuarios del sistema
+        usuarios = UsuarioSistema.objects.all()
+        permisos_a_crear = []
+
+        for usuario in usuarios:
+            # Si la zona es pública → acceso habilitado
+            acceso = True if tipo_zona == "publica" else False
+            permisos_a_crear.append(
+                PermisoZona(usuario=usuario, zona=nueva_zona, acceso_habilitado=acceso)
+            )
+
+        # Guardar todos los permisos en bloque
+        if permisos_a_crear:
+            PermisoZona.objects.bulk_create(permisos_a_crear)
+
+        messages.success(request, "Zona creada correctamente con permisos asignados a todos los usuarios.")
+        return redirect("adminZonas")
+
+    return movimiento_boton_navegador(request, "carpAdmin/crearZona.html")
+
+
+
+def ver_zona(request, zona_id):
+    zona = get_object_or_404(Zona, id=zona_id)
+    query = request.GET.get("q", "").strip()
+
+    permisos = PermisoZona.objects.filter(zona=zona).select_related('usuario')
+
+    if query:
+        permisos = permisos.filter(
+            Q(usuario__nombres__icontains=query) |
+            Q(usuario__apellidos__icontains=query) |
+            Q(usuario__rut__icontains=query)
+        )
+
+    return movimiento_boton_navegador(request, "carpAdmin/verZona.html", {
+        "zona": zona,
+        "permisos": permisos,
+        "query": query,
+        "mostrar_menu": request.session.get("mostrar_menu", True),
+    })
+
+
+@csrf_exempt
+def cambiar_permiso_zona(request):
+    if request.method == "POST":
+        import json
+        data = json.loads(request.body)
+        permiso_id = data.get("permiso_id")
+        acceso_habilitado = data.get("acceso_habilitado")
+
+        try:
+            permiso = PermisoZona.objects.get(id=permiso_id)
+            permiso.acceso_habilitado = acceso_habilitado
+            permiso.save()
+            return JsonResponse({"success": True})
+        except PermisoZona.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Permiso no encontrado."})
+    return JsonResponse({"success": False, "error": "Método no permitido."})
+
+
+
+def eliminar_zona(request, zona_id):
+    """Elimina una zona con confirmación."""
+    zona = get_object_or_404(Zona, id=zona_id)
+    zona.delete()
+    messages.success(request, f"La zona '{zona.nombre}' fue eliminada correctamente.")
+    return redirect("adminZonas")

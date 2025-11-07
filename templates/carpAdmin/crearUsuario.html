@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block header_title %}Nuevo Usuario{% endblock %}
+
+{% block content %}
+<div class="contenedor-admin">
+    <h2>Crear nuevo usuario</h2>
+
+    <form method="post" action="" class="form-crear-usuario">
+        {% csrf_token %}
+        <div class="form-grupo">
+            <label for="nombres">Nombres:</label>
+            <input type="text" id="nombres" name="nombres" required>
+        </div>
+
+        <div class="form-grupo">
+            <label for="apellidos">Apellidos:</label>
+            <input type="text" id="apellidos" name="apellidos" required>
+        </div>
+
+        <div class="form-grupo">
+            <label for="rut">RUT:</label>
+            <input type="text" id="rut" name="rut" required>
+        </div>
+
+        <div class="form-grupo">
+            <label for="telefono">Teléfono:</label>
+            <input type="text" id="telefono" name="telefono">
+        </div>
+
+
+
+        <div class="form-grupo-check">
+            <label for="activo">Activo:</label>
+            <input type="checkbox" id="activo" name="activo" checked>
+        </div>
+
+        <div class="botones-form">
+            <button type="submit" class="btn-guardar">
+                <i class="fa-solid fa-save"></i> Guardar
+            </button>
+            <a href="{% url 'adminUsuario' %}" class="btn-volver">
+                <i class="fa-solid fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+.contenedor-admin {
+    width: 90%;
+    margin: 20px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    color: #003973;
+}
+
+h2 {
+    text-align: center;
+    color: #003973;
+    margin-bottom: 25px;
+}
+
+.form-crear-usuario {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 80%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-grupo {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-grupo label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-grupo input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.form-grupo-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+}
+
+.botones-form {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-guardar {
+    background: linear-gradient(135deg, #003973, #0055aa);
+    color: #fff;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    transition: background 0.3s ease, transform 0.15s ease;
+}
+
+.btn-guardar i {
+    margin-right: 5px;
+    color: #fbc100;
+}
+
+.btn-guardar:hover {
+    background: linear-gradient(135deg, #0055aa, #003973);
+    transform: translateY(-2px);
+}
+
+.btn-volver {
+    background: #777;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    transition: background 0.3s ease;
+}
+
+.btn-volver i {
+    margin-right: 5px;
+}
+
+.btn-volver:hover {
+    background: #555;
+}
+</style>
+
+{% endblock %}

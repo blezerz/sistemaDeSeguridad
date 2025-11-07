@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block header_title %}Crear Zona{% endblock %}
+
+{% block content %}
+<div class="contenedor-admin">
+    <h2>Nueva Zona</h2>
+
+    <form method="POST" class="form-crear-zona">
+        {% csrf_token %}
+
+        <div class="campo-form">
+            <label for="nombre">Nombre de la zona:</label>
+            <input type="text" id="nombre" name="nombre" required placeholder="Ej: Acceso Principal">
+        </div>
+
+        <div class="campo-form">
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" name="descripcion" rows="3" placeholder="Breve descripción de la zona..."></textarea>
+        </div>
+
+        <div class="campo-form">
+            <label for="tipo_zona">Tipo de Zona:</label>
+            <select id="tipo_zona" name="tipo_zona" required>
+                <option value="publica">Pública</option>
+                <option value="segura">Segura</option>
+            </select>
+        </div>
+
+        <div class="acciones-form">
+            <a href="{% url 'adminZonas' %}" class="btn-cancelar">
+                <i class="fa-solid fa-arrow-left"></i> Cancelar
+            </a>
+            <button type="submit" class="btn-guardar">
+                <i class="fa-solid fa-plus-circle"></i> Crear Zona
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+/* Contenedor principal */
+.contenedor-admin {
+    background: #fff;
+    padding: 25px 35px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    width: 50%;
+    margin: 40px auto;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+/* Título */
+.contenedor-admin h2 {
+    text-align: center;
+    color: #003973;
+    margin-bottom: 25px;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Campos */
+.campo-form {
+    margin-bottom: 15px;
+}
+.campo-form label {
+    font-weight: bold;
+    color: #003973;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+}
+.campo-form input,
+.campo-form textarea,
+.campo-form select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: #f9f9f9;
+    color: #333;
+}
+.campo-form input:focus,
+.campo-form textarea:focus,
+.campo-form select:focus {
+    border-color: #003973;
+    outline: none;
+    background: #fff;
+}
+
+/* Botones */
+.acciones-form {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+.btn-guardar,
+.btn-cancelar {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 15px;
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+.btn-guardar {
+    background: #003973;
+}
+.btn-guardar:hover {
+    background: #0055aa;
+}
+.btn-cancelar {
+    background: #777;
+}
+.btn-cancelar:hover {
+    background: #555;
+}
+
+/* Animación */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+{% endblock %}
